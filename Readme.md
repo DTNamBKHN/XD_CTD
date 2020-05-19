@@ -118,5 +118,39 @@ if (currentChar == '{')
 ```
 ### Xử lý trường hợp dấu nháy đơn viết bằng ''''(4 dấu nháy đơn)
 ```
-
+case CHAR_SINGLEQUOTE: 
+    token = makeToken(TK_NONE, lineNo, colNo);
+    for (int i = 0; i < 3; i++) {
+      readChar();
+      if (charCodes[currentChar] != CHAR_SINGLEQUOTE)
+        error(ERR_INVALIDSYMBOL, token->lineNo, token->colNo);
+    }
+    return readConstChar();
+    
+Token* readConstChar(void) {
+  // TODO
+  Token *token = makeToken(TK_CHAR, lineNo, colNo);
+  readChar();
+  if (currentChar != EOF) {
+    token->string[0] = currentChar;
+    readChar();
+    if (charCodes[currentChar] == CHAR_SINGLEQUOTE) {
+      token->string[1] = '\0';
+      for (int i = 0; i < 3; i++) {
+        readChar();
+        if (charCodes[currentChar] != CHAR_SINGLEQUOTE)
+          error(ERR_INVALIDSYMBOL, token->lineNo, token->colNo);
+      }
+      readChar();
+      return token;
+    }
+    else {
+      token->tokenType = TK_NONE;
+      error(ERR_INVALIDCHARCONSTANT, token->lineNo, token->colNo);
+      return token;
+    } 
+  }
+  return token;
+}
 ```
+###
